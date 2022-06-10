@@ -1,0 +1,58 @@
+on script load:
+    set {-sql} to the database "mysql://192.168.50.220:3306/mydatabase?user=root&password=mc_159159159&useSSL=false"
+    send "Loaded Dictionary" to console
+command /도감설정:
+    trigger:
+        if player is op:
+            open chest with 6 row named "&e&l도감 설정 |" to player
+            loop 54 times:
+                set slot (loop-number)-1 of current inventory of player to {dictionary_list::%loop-number%}
+            stop
+on inventory close:
+    if event-inventory's display name contains "&e&l도감 설정 |":
+        delete {dictionary_list::*}
+        loop 54 times:
+            if slot (loop-number)-1 of current inventory of player is not empty:
+                add slot (loop-number)-1 of current inventory of player to {dictionary_list::*}
+        message "설정이 완료 되었습니다."
+        stop
+
+command /도감 [<offlineplayer>]:
+    trigger:
+        if arg-1 is not set:
+            open chest with 6 row named "&e&l링 도감" to player
+            loop 54 times:
+                if {dictionary::%uuid of player%::%loop-number%} is set:
+                    set {_item} to {dictionary_list::%loop-number%}
+                    set line 1 of lore of {_item} to "&f도감 번호 | %loop-number%"
+                    set line 2 of lore of {_item} to "&f수집 레벨 | %{tier_dictionary::%uuid of player%::%loop-number%}%"
+                    set {_tier} to {tier_dictionary::%uuid of player%::%loop-number%} * 10
+                    set line 3 of lore of {_item} to "&f수집 현황 | %{dictionary::%uuid of player%::%loop-number%}%/%{_tier}%" 
+                    set slot (loop-number)-1 of current inventory of player to {_item}             					
+                else:
+                    set slot (loop-number)-1 of current inventory of player to air
+            stop
+        else:
+            send "&e&l알림 &f|&7 준비중" to player
+
+command /도감관리 [<player>] [<number>] [<integer>]:
+    trigger:
+        if player is op:
+            add arg-3 to {dictionary::%uuid of arg-1%::%arg-2%}
+            send "%arg-1%의 도감 번호 : %arg-2%이(가) 추가 되었습니다." to player
+            if {dictionary::%uuid of arg-1%::%arg-2%} <= 0:
+                delete {dictionary::%uuid of arg-1%::%arg-2%}
+            if {tier_dictionary::%uuid of arg-1%::%arg-2%} is not set:
+                set {tier_dictionary::%uuid of arg-1%::%arg-2%} to 1
+                
+
+on inventory click:
+    if inventory name of current inventory of player is "&e&l링 도감":
+        cancel event
+        set {_slot} to (clicked raw slot)+1
+        set {_tier} to {tier_dictionary::%uuid of player%::%{_slot}%} * 10
+        if {_tier} <= {dictionary::%uuid of player%::%{_slot}%}:
+            send "승급" to player
+            add 1 to {tier_dictionary::%uuid of player%::%{_slot}%}
+            set {dictionary::%uuid of player%::%{_slot}%} to 0
+            close player's inventory
