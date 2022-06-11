@@ -1,2 +1,2 @@
-# LANG_Dictionary
-도감 시스템
+# LANG System
+Dictionary | 도감 시스템
