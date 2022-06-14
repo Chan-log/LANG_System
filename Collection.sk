@@ -1,0 +1,35 @@
+on load:
+	delete {pickcool::*}
+
+on rightclick on player head:
+	if name of player's tool is "&f최하급 가위":
+		if {pickcool::%player%} is not set:
+			if {fatigue::%player%} > 0:
+				set {pickcool::%player%} to true
+				send "&e&l알림 &f| &7기운을 소모하여 채집합니다." to player
+				set {_loc} to location 0.5 above event-block
+				set {_time} to 5
+				set {_maxtime} to {_time}
+				add 10 to durability of player's tool
+				set {_max1} to max durability of event-item - durability of event-item
+				if {_max1} < 1:
+					remove 1 of player's tool from player's tool
+					send "&e&l알림 &f|&7 내구도가 모두 소진 되어 아이템이 파괴 되었습니다." to player
+					play sound "item.shield.break" with volume 10 for player
+				loop {_time} + 1 times:
+					if {_time} > 0:
+						set {_timeper} to {_maxtime} - {_time} 
+						set {_timeper} to {_timeper} / {_maxtime} * 100
+						display hologram "&b%{_timeper}%%%" at {_loc} to player for 1 seconds
+						play sound "entity.experience_orb.pickup" with volume 10 for player
+						remove 1 from {_time}
+						wait 20 ticks
+					else:
+						display hologram "&e&l100%%" at {_loc} to player for 1 seconds
+						play sound "entity.player.levelup" with volume 10 for player
+						wait 20 ticks
+						delete {pickcool::%player%}
+			else:
+				send "&e&l알림 &f| &7기운이 부족합니다." to player
+		else:
+			send "&e&l알림 &f| &7이미 채집 중입니다." to player
