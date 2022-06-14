@@ -1,0 +1,20 @@
+every 1 minutes:
+	loop all players:
+		add 1 to {fatigue::%loop-player%}
+		if {fatigue::%loop-player%} > {maxfatigue::%uuid of loop-player%}:
+			set {fatigue::%loop-player%} to {maxfatigue::%uuid of loop-player%}
+
+command /기운 [<text>] [<offlineplayer>] [<integer>]:
+	trigger:
+		if executor is not op:
+			send "&e&l기운 &f| &7%{fatigue::%player%}% / %{maxfatigue::%uuid of player%}%" to player
+		else:
+			send "&e&l기운 &f| &7%{fatigue::%player%}% / %{maxfatigue::%uuid of player%}%" to player
+			if arg-1 is "설정":
+				set {fatigue::%arg-2%} to arg-3
+				send "&e&l기운 &f| &7%{fatigue::%arg-2%}%" to player
+			if arg-1 is "최대":
+				set {maxfatigue::%uuid of arg-2%} to arg-3
+				send "&e&l최대 기운 &f| &7%{maxfatigue::%uuid of arg-2%}%" to player
+			if arg-1 is "확인":
+				send "&e&l기운 &f| &7%{fatigue::%arg-2%}% / %{maxfatigue::%uuid of arg-2%}%" to player
