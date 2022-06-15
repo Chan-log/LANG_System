@@ -1,0 +1,49 @@
+
+on right click on barrier:
+	if player is sneaking:
+        stop
+    if player's vehicle is set:
+        stop
+    if {chair::%location of event-block%} is set:
+        set {_cont} to true
+        loop all entities in radius 1.1 around location of block below player:
+            if loop-entity is a strider:
+                send "&e&l알림 |&f 근처에 이미 앉아 있는 사람이 있습니다." to player
+                stop
+        {_cont} is set
+        if x of velocity of player or z of velocity of player is not 0:
+            send "&e&l알림 | &f앉을 수 없습니다."
+            stop
+        if vehicle of player is set:
+            send "&e&l알림 |&f 이미 앉아있습니다!" to player
+            stop
+        set {_l} to location of event-block
+        set pitch of {_l} to player's pitch
+        set yaw of {_l} to player's yaw - 180
+        teleport player to {_l}
+        set {_spawnloc} to location of player
+        set y-coordinate of {_spawnloc} to y-coordinate of {_spawnloc}-1.7
+        spawn 1 strider at {_spawnloc}
+        set name of last spawned strider to "&eSeat"
+        set {_strider} to spawned strider
+        set health of {_strider} to 1
+        Add "{NoAI:1}" to entity nbt of {_strider}
+        Add "{NoGravity:1}" to entity nbt of {_strider}
+        Add "{Invulnerable:1}" to entity nbt of {_strider}
+        Add "{Silent:1}" to entity nbt of {_strider}
+        apply potion of invisibility without any particles to {_strider} for 9 days
+        make the player ride {_strider}
+        send "&e&l알림 |&f 시프트 버튼을 눌러 일어날수 있습니다." to player
+
+on death:
+    name of victim is "&eSeat"
+    clear drops
+on vehicle exit:
+    name of vehicle of player is "&eSeat":
+        delete vehicle of player
+        set {_w} to world of player
+        set {_loc} to location of player
+        set y-coordinate of {_loc} to y-coordinate of {_loc}+0.6
+        wait a tick
+        {_w} is player's world
+        teleport player to {_loc}
