@@ -1,0 +1,59 @@
+command /초월강화:
+    trigger:
+        if player is op:
+            open chest with 1 rows named "&2&l초월 강화" to player
+            set slot 0 and 2 and 3 and 5 and 6 and 8 of current inventory of player to black stained glass pane named "&f" with lore ""
+            set slot 4 of current inventory of player to yellow stained glass pane named "&f" with lore ""
+
+on inventory click:
+    if inventory name of current inventory of player contains "&2&l초월 강화":
+        if click type is left mouse button with shift or right mouse button with shift or right mouse button:
+            cancel event
+        else:
+            if clicked raw slot is 0 or 2 or 3 or 5 or 6 or 8:
+                cancel event
+            else if clicked raw slot is 4:
+                cancel event
+                set {_w} to slot 1 of current inventory of player
+                if {_w} is air:
+                    message "2번 칸에 아이템을 올려주세요." to player
+                else:
+                    set slot 2 of current inventory of player to red stained glass pane named "&f" with lore ""
+                    play sound "ENTITY_PLAYER_LEVELUP" with volume 1 and pitch 1 to player
+                    wait 10 ticks
+                    set slot 3 of current inventory of player to red stained glass pane named "&f" with lore ""
+                    play sound "ENTITY_PLAYER_LEVELUP" with volume 1 and pitch 1 to player
+                    wait 10 ticks
+                    set slot 4 of current inventory of player to red stained glass pane named "&f" with lore ""
+                    play sound "ENTITY_PLAYER_LEVELUP" with volume 1 and pitch 1 to player
+                    wait 10 ticks
+                    set slot 5 of current inventory of player to red stained glass pane named "&f" with lore ""
+                    play sound "ENTITY_PLAYER_LEVELUP" with volume 1 and pitch 1 to player
+                    wait 10 ticks
+                    set slot 6 of current inventory of player to red stained glass pane named "&f" with lore ""
+                    play sound "ENTITY_PLAYER_LEVELUP" with volume 1 and pitch 1 to player
+                    wait 10 ticks
+                    delete slot 1 of current inventory of player
+                    set {_sharp} to level of sharpness of {_w}
+                    send "%{_sharp}%" to player
+                    set level of sharpness of {_w} to {_sharp} + 1
+                    set slot 7 of current inventory of player to {_w}
+                    message "아이템 챙겨" to player
+                    set slot 0 and 2 and 3 and 5 and 6 and 8 of current inventory of player to black stained glass pane named "&f" with lore ""
+                    set slot 4 of current inventory of player to yellow stained glass pane named "&f" with lore ""
+on inventory close:
+    if event-inventory's display name contains "&2&l초월 강화":
+        set {_item1} to slot 1 of current inventory of player
+        set {_item2} to slot 7 of current inventory of player
+        if {_item1} is not air:
+            if player have enough space for {_item1}:
+                give {_item1} to player
+            else:
+                drop {_item1}
+                send "&e&l알림 &f|&7 인벤토리에 자리가 부족하여 땅으로 떨어집니다." to player
+        if {_item2} is not air:
+            if player have enough space for {_item2}:
+                give {_item2} to player
+            else:
+                drop {_item2}
+                send "&e&l알림 &f|&7 인벤토리에 자리가 부족하여 땅으로 떨어집니다." to player
