@@ -8,3 +8,5 @@ Fatigue | 피로도 시스템
 Collection | 채집 시스템
 
 Chair | 의자
+
+Upgrade | 초월 강화
