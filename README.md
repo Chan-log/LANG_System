@@ -11,4 +11,4 @@ Chair | 의자
 
 Upgrade | 초월 강화
 
-계획 신비한 모루
+Itemskin | 신비한 모루 ( 메이플 모루 )
