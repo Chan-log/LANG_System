@@ -1,0 +1,70 @@
+on load:
+    delete {boxopen::*}
+command /아이템스킨:
+    trigger:
+        if player is op:
+            if {boxopen::%player%} is not set:
+                if player's tool is netherite sword:
+                    set {boxopen::%player%} to true
+                    set {_int} to random integer between 1 and 99
+                    set {_int2} to random integer between 1 and 1000000
+                    add 1000 to {_int}
+                    send title "&k&l%{_int} + {_int2}%" with subtitle "&f외형 정보를 불러오는 중..." to player for 2 seconds
+                    wait 2 seconds
+                    send title "&e&l축하합니다." with subtitle "&f아이템 외형이 성공적으로 변경 되었습니다." to player for 1 seconds
+                    play sound "ENTITY_PLAYER_LEVELUP" with volume 1 and pitch 1 to player
+                    set player's tool to player's tool with custom model data {_int}
+                    wait 1 seconds
+                    delete {boxopen::%player%}
+            else:
+                send "&e&l알림 &f| &7이미 외형 정보를 불러오고 있습니다." to player
+
+command /신비한모루:
+    trigger:
+        if player is op:
+            open chest with 1 rows named "&2&l외형 변경" to player
+            set slot 0 and 2 and 3 and 5 and 8 of current inventory of player to black stained glass pane named "" with lore ""
+            set slot 4 of current inventory of player to yellow stained glass pane named "" with lore ""
+on inventory click:
+    if inventory name of current inventory of player contains "&2&l외형 변경":
+        if click type is left mouse button with shift or right mouse button with shift or right mouse button:
+            cancel event
+        else:
+            if clicked raw slot is 0 or 2 or 3 or 5 or 8:
+                cancel event
+            else if clicked raw slot is 4:
+                cancel event
+                if slot 1 of current inventory of player is air:
+                    message "2번 칸에 아이템을 올려주세요." to player
+                else:
+                    set {_w} to slot 1 of current inventory of player
+                    delete slot 1 of current inventory of player
+                    set {_custom} to slot 6 of current inventory of player
+                    set {_custom} to custom model data of {_custom}
+                    delete slot 6 of current inventory of player
+                    set slot 7 of current inventory of player to {_w} with custom model data {_custom}
+                    message "아이템 챙겨" to player
+
+on inventory close:
+    if event-inventory's display name contains "&2&l외형 변경":
+        set {_item1} to slot 1 of current inventory of player
+        set {_item2} to slot 6 of current inventory of player
+        set {_item3} to slot 7 of current inventory of player
+        if {_item1} is not air:
+            if player have enough space for {_item1}:
+                give {_item1} to player
+            else:
+                drop {_item1}
+                send "&e&l알림 &f|&7 인벤토리에 자리가 부족하여 땅으로 떨어집니다." to player
+        if {_item2} is not air:
+            if player have enough space for {_item2}:
+                give {_item2} to player
+            else:
+                drop {_item2}
+                send "&e&l알림 &f|&7 인벤토리에 자리가 부족하여 땅으로 떨어집니다." to player
+        if {_item3} is not air:
+            if player have enough space for {_item3}:
+                give {_item3} to player
+            else:
+                drop {_item3}
+                send "&e&l알림 &f|&7 인벤토리에 자리가 부족하여 땅으로 떨어집니다." to player
