@@ -1,0 +1,9 @@
+on rightclick:
+    if player is sneaking:
+        #GUI OPEN
+        open chest with 1 rows named "&f%entity's name%님의 정보" to player
+        set slot 1  of current inventory of player to PAPER named "&f유저 정보" with lore "" and "" with custom model data 11128		
+
+on inventory click:
+    if inventory name of current inventory of player is "&f%entity's name%님의 정보":
+        cancel event
