@@ -1,0 +1,22 @@
+on script load:
+	set {mongoCluster} to mongo server with connection string "mongodb+srv://root:go_159159159@cluster0.j1qgc.mongodb.net/minecraft?retryWrites=true&w=majority"
+	set {mongoDatabase} to mongo database "database" of {mongoCluster}
+	set {mongoCollection} to mongo collection "collection" of {mongoDatabase}
+
+on join:
+	set {_doc} to a new mongo document
+	set mongo value "uuid" of {_doc} to player's uuid
+	set mongo value "name" of {_doc} to player's name
+	insert mongo document {_doc} into collection {mongoCollection}
+
+command dataupload:
+	trigger:
+		set {_doc} to first mongo document with mongosk filter where field "uuid" is player's uuid of collection {mongoCollection}
+		set mongo value "name" of {_doc} to player's name
+		update mongo document {_doc} of {mongoCollection}
+	
+command datadownload:
+	trigger:
+		set {_doc} to first mongo document with mongosk filter where field "uuid" is player's uuid of collection {mongoCollection}
+		set {_name} to mongo value "name" of {_doc}
+		send "%{_name}%" to player
