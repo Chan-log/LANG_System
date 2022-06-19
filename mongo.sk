@@ -3,17 +3,30 @@ on script load:
 	set {mongoDatabase} to mongo database "database" of {mongoCluster}
 	set {mongoCollection} to mongo collection "collection" of {mongoDatabase}
 
-on join:
+on first join:
 	set {_doc} to a new mongo document
 	set mongo value "uuid" of {_doc} to player's uuid
 	set mongo value "name" of {_doc} to player's name
+	set mongo value "pop" of {_doc} to 0
+	set mongo value "cash" of {_doc} to 0
+	set mongo value "upgrade" of {_doc} to 0
+	set mongo value "recommand" of {_doc} to 0
+	set mongo value "reborn" of {_doc} to 0
+	set mongo value "maxfaigue" of {_doc} to 0
+	set mongo value "money" of {_doc} to 0
+	set mongo value "step" of {_doc} to 0
+	set mongo value "progress" of {_doc} to 0
 	insert mongo document {_doc} into collection {mongoCollection}
 
 command dataupload:
 	trigger:
 		set {_doc} to first mongo document with mongosk filter where field "uuid" is player's uuid of collection {mongoCollection}
 		set mongo value "name" of {_doc} to player's name
+		set mongo value "pop" of {_doc} to {pop::%uuid of player%}
+		set {_money} to placeholder "xconomy_balance_value" from player parsed as number
+		set mongo value "money" of {_doc} to {_money}
 		update mongo document {_doc} of {mongoCollection}
+		send "update %{_money}%" to player
 	
 command datadownload:
 	trigger:
