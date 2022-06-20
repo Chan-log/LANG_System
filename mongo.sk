@@ -1,22 +1,30 @@
+on first join:
+	if {fatigue::%player%} is not set:
+		set {fatigue::%player%} to 100
+	if {maxfatigue::%uuid of player%} is not set:
+		set {maxfatigue::%uuid of player%} to 100
+	if {connectpoint::%uuid of player%} is not set:
+		set {connectpoint::%uuid of player%} to 0
+	if {pop::%uuid of player%} is not set:
+		set {pop::%uuid of player%} to 0
+		set {_doc} to a new mongo document
+		set mongo value "uuid" of {_doc} to player's uuid
+		set mongo value "name" of {_doc} to player's name
+		set mongo value "pop" of {_doc} to 0
+		set mongo value "cash" of {_doc} to 0
+		set mongo value "upgrade" of {_doc} to 0
+		set mongo value "recommand" of {_doc} to 0
+		set mongo value "reborn" of {_doc} to 0
+		set mongo value "maxfaigue" of {_doc} to 0
+		set mongo value "money" of {_doc} to 0
+		set mongo value "step" of {_doc} to 0
+		set mongo value "progress" of {_doc} to 0
+		insert mongo document {_doc} into collection {mongoCollection}
+
 on script load:
 	set {mongoCluster} to mongo server with connection string "mongodb+srv://root:go_159159159@cluster0.j1qgc.mongodb.net/minecraft?retryWrites=true&w=majority"
 	set {mongoDatabase} to mongo database "database" of {mongoCluster}
 	set {mongoCollection} to mongo collection "collection" of {mongoDatabase}
-
-on first join:
-	set {_doc} to a new mongo document
-	set mongo value "uuid" of {_doc} to player's uuid
-	set mongo value "name" of {_doc} to player's name
-	set mongo value "pop" of {_doc} to 0
-	set mongo value "cash" of {_doc} to 0
-	set mongo value "upgrade" of {_doc} to 0
-	set mongo value "recommand" of {_doc} to 0
-	set mongo value "reborn" of {_doc} to 0
-	set mongo value "maxfaigue" of {_doc} to 0
-	set mongo value "money" of {_doc} to 0
-	set mongo value "step" of {_doc} to 0
-	set mongo value "progress" of {_doc} to 0
-	insert mongo document {_doc} into collection {mongoCollection}
 
 command dataupload:
 	trigger:
