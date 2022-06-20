@@ -1,0 +1,60 @@
+
+			
+options:
+	매크로: &e&l알림 |&f
+command /거짓말설정 [<player>] [<integer>]:
+	trigger:
+		if player is op:
+			set {매크로누적::%arg-1%} to arg-2
+			send "&c&l매크로 |&7 %arg-1%님의 매크로 누적이 %{매크로누적::%arg-1%}%로 설정 되었습니다."
+command /매크로초기화:
+	trigger:
+		if player is op:
+			delete {매크로누적::*}
+command /매크로 [<player>]:
+	trigger:
+		if arg-1 is not set:
+			send "&c&l매크로 |&7 %player%님의 매크로 누적은 %{매크로누적::%player%}%회 입니다."		
+		else:
+			send "&c&l매크로 |&7 %arg-1%님의 매크로 누적은 %{매크로누적::%arg-1%}%회 입니다."
+command /거짓말 [<player>]:
+	trigger:
+		if player is op:
+			set {macro.%arg 1%} to random integer between 1000 and 9999
+			set {_p} to arg-1 
+			send title "&d&l%{macro.%arg 1%}%" with subtitle "&f채팅에 숫자를 입력하지 못할 경우 스폰으로 이동됩니다." to {_p} for 5 seconds
+			message "{@매크로} &d&l%{macro.%arg 1%}%&f을(를) 채팅에 입력하세요! 입력하지 않을시 10초 후에 스폰으로 이동됩니다." to {_p}
+			wait 10 seconds
+			if {macro.%arg 1%} is set:
+				execute console command "cmi spawn %arg 1%"
+				broadcast "{@매크로} &f%arg-1%님께서 매크로 검사에 응답하지 못하셨습니다."
+				delete {macro.%arg 1%}
+				if {매크로누적::%arg-1%} is not set:
+					set {매크로누적::%arg-1%} to 1
+				else:
+					add 1 to {매크로누적::%arg-1%}
+				if {매크로누적::%arg-1%} is higher than 5:
+					make arg-1 run cmd "jail %arg-1% fishing 30m" as op
+					make arg-1 run cmd "freeze %arg-1% 30m" as op
+				stop
+			else:
+				stop
+on tool break:
+	if player's tool is fishing rod:
+		make player run cmd "거짓말 %player%" as op
+#on fishing:
+#	if "%fishing state%" is "CAUGHT_FISH":
+#		execute console command "lightning cutewizzi"
+on rightclick holding a egg:
+	if {eggm.%player%} is not set:
+		set {eggm.%player%} to 1
+	add 1 to {eggm.%player%}
+	if {eggm.%player%} is 200:
+		make player run cmd "거짓말 %player%" as op
+on chat:
+	if chat message contains "%{macro.%player%}%":
+		cancel event
+		delete {macro.%player%}
+		delete {eggm.%player%}
+		message "{@매크로} 매크로가 아님이 확인되었습니다!"
+		stop
