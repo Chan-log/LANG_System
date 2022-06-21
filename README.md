@@ -18,3 +18,5 @@ Status | 쉬프트 + 우클릭 시
 Mongo | Mongo 데이터 베이스 
 
 detector | 매크로 검사
+
+yaml | skript-yaml 
