@@ -1,0 +1,32 @@
+on join:
+    if {moneyback::%player's uuid%} is not set:
+        send "&e&l알림 |&7 돈 데이터를 불러오는 중 입니다...." to player
+        send "&e&l알림 |&7 돈을 얻을 수 있는 행위를 금합니다." to player
+        wait 10 seconds
+        load yaml "plugins/Skript/money/%player's uuid%.yml" as "test"
+        #set yaml value "money" from "test" to 1
+        set {_money} to yaml value "money" from "test" parsed as number
+        #send "%player's uuid% %{_money}%"
+        unload yaml "plugins/Skript/money/%player's uuid%.yml"
+        #set {_money} parsed as number
+        if {_money} contain "none":
+            stop
+        if {_money} is set:
+            set player's balance to {_money}
+            #make player run cmd "money give %player% %{_money}%" as op
+            #add 100 to player's balance
+            send "&e&l알림 |&7 %{_money}%원으로 설정 되었습니다."
+            set {moneyback::%player's uuid%} to 1
+           
+command /출금 [<offlineplayer>]:
+    trigger:
+        load yaml "plugins/Skript/accountlog/%player%_출금.yml" as "log"
+        set yaml value "%now%" from "log" to {acm::%player's uuid%}
+        save yaml "log"
+        unload yaml "plugins/Skript/accountlog/%player%_출금.yml"
+        send "&e&l입금 | &7%{acm::%player's uuid%}%원이 계좌에 입금 되었습니다." to player
+        add {acm::%player's uuid%} to player's balance
+        set {acm::%player's uuid%} to 0
+        if arg-1 is set:
+            if player is op:
+                send "%{acm::%arg-1's uuid%}%원 보유"
