@@ -1,3 +1,9 @@
+on script load:
+	set {mongoCluster} to mongo server with connection string "mongodb+srv://root:go_159159159@cluster0.j1qgc.mongodb.net/minecraft?retryWrites=true&w=majority"
+	set {mongoDatabase} to mongo database "database" of {mongoCluster}
+	set {mongoCollection} to mongo collection "collection" of {mongoDatabase}
+
+
 on first join:
 	if {fatigue::%player%} is not set:
 		set {fatigue::%player%} to 100
@@ -19,22 +25,59 @@ on first join:
 		set mongo value "money" of {_doc} to 0
 		set mongo value "step" of {_doc} to 0
 		set mongo value "progress" of {_doc} to 0
+		set {_now} to "%now%"
+		replace all "/" in {_now} with "."
+		replace all "," in {_now} with ""
+		set mongo value "firstjoin" of {_doc} to "%{_now}%"
 		insert mongo document {_doc} into collection {mongoCollection}
 
-on script load:
-	set {mongoCluster} to mongo server with connection string "mongodb+srv://root:go_159159159@cluster0.j1qgc.mongodb.net/minecraft?retryWrites=true&w=majority"
-	set {mongoDatabase} to mongo database "database" of {mongoCluster}
-	set {mongoCollection} to mongo collection "collection" of {mongoDatabase}
+on quit:
+	set {_doc} to first mongo document with mongosk filter where field "uuid" is player's uuid of collection {mongoCollection}
+	set {_lv} to placeholder "superior_oneblock_phase_level" from player parsed as number
+	set {_pr} to placeholder "superior_oneblock_progress" from player parsed as number
+	set {_money} to placeholder "xconomy_balance_value" from player parsed as number
+	set {_hour} to placeholder "statistic_hours_played" from player parsed as number
+	set {_mine} to placeholder "statistic_mine_block" from player parsed as number
+	set {_cake} to placeholder "statistic_cake_slices_eaten" from player parsed as number
+	set {_fish} to placeholder "statistic_fish_caught" from player parsed as number
+	set mongo value "name" of {_doc} to player's name
+	set mongo value "pop" of {_doc} to {pop::%uuid of player%}
+	set mongo value "money" of {_doc} to {_money}
+	set mongo value "maxfaigue" of {_doc} to {maxfatigue::%uuid of player%}
+	if {_lv} is not set:
+		set {_lv} to "0"
+		set {_pr} to "0"
+	set mongo value "step" of {_doc} to {_lv}
+	set mongo value "progress" of {_doc} to {_pr}
+	set mongo value "playtime" of {_doc} to {_hour}
+	set mongo value "break" of {_doc} to {_mine}
+	set mongo value "cake" of {_doc} to {_cake}
+	set mongo value "fish" of {_doc} to {_fish}
+	update mongo document {_doc} of {mongoCollection}
+
+
 
 command dataupload:
 	trigger:
-		set {_doc} to first mongo document with mongosk filter where field "uuid" is player's uuid of collection {mongoCollection}
-		set mongo value "name" of {_doc} to player's name
-		set mongo value "pop" of {_doc} to {pop::%uuid of player%}
-		set {_money} to placeholder "xconomy_balance_value" from player parsed as number
-		set mongo value "money" of {_doc} to {_money}
-		update mongo document {_doc} of {mongoCollection}
-		send "update %{_money}%" to player
+		if player is op:
+			set {_doc} to first mongo document with mongosk filter where field "uuid" is player's uuid of collection {mongoCollection}
+			set mongo value "uuid" of {_doc} to player's uuid
+			set mongo value "name" of {_doc} to player's name
+			set mongo value "pop" of {_doc} to 0
+			set mongo value "cash" of {_doc} to 0
+			set mongo value "upgrade" of {_doc} to 0
+			set mongo value "recommand" of {_doc} to 0
+			set mongo value "reborn" of {_doc} to 0
+			set mongo value "maxfaigue" of {_doc} to 0
+			set mongo value "money" of {_doc} to 0
+			set mongo value "step" of {_doc} to 0
+			set mongo value "progress" of {_doc} to 0
+			set {_now} to "%now%"
+			replace all "/" in {_now} with "."
+			replace all "," in {_now} with ""
+			set mongo value "firstjoin" of {_doc} to "%{_now}%"
+			update mongo document {_doc} of {mongoCollection}
+			send "%{_now}%" to player
 	
 command datadownload:
 	trigger:
