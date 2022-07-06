@@ -26,8 +26,18 @@ function pageOpen(p : player, page : number):
 		set {_loop} to loop-number
 		set {_title} to mongo value "title" of {_docs::%{_count}-{_loop}+1-{_imaPage}%}
 		set {_content} to mongo value "content" of {_docs::%{_count}-{_loop}+1-{_imaPage}%}
+		set {_multiLine::*} to {_content} split by "&"
+		set {_time} to mongo value "time" of {_docs::%{_count}-{_loop}+1-{_imaPage}%}
 		if {_title} is set:
-			set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_content}%" with custom model data 11128		
+			set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128
+			if {_multiLine::5} is set:
+				set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "&f%{_multiLine::5}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128		
+			else if {_multiLine::4} is set:
+				set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
+			else if {_multiLine::3} is set:
+				set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
+			else if {_multiLine::2} is set:
+				set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
 		else:
 			exit loop
 
