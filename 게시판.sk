@@ -18,32 +18,40 @@ function pageOpen(p : player, page : number):
 	set {_count} to mongo estimated document count of {mongoCollection}
 	set {_docs::*} to all mongo documents of collection {mongoCollection}
 	open chest with 6 rows named "&f섬원 모집" to {_p}
+	if {page} > 1:
+		set slot 48 of current inventory of {_p} to PAPER named "&f이전 페이지" with lore "" with custom model data 11128
 	set slot 49 of current inventory of {_p} to PAPER named "&f현재 페이지" with lore "&f%{_page}%" with custom model data 11128
 	set slot 50 of current inventory of {_p} to PAPER named "&f다음 페이지" with lore "" with custom model data 11128
 	set {_imaPage} to ({_page}-1)*45
-	# send "%{_imaPage}%" to {_p}
+	# 역순으로 반복
 	loop 45 times:
 		set {_loop} to loop-number
+		# 총갯수 - 루프 횟수 + 1 - 현재 페이지
 		set {_title} to mongo value "title" of {_docs::%{_count}-{_loop}+1-{_imaPage}%}
 		set {_content} to mongo value "content" of {_docs::%{_count}-{_loop}+1-{_imaPage}%}
 		set {_multiLine::*} to {_content} split by "&"
 		set {_time} to mongo value "time" of {_docs::%{_count}-{_loop}+1-{_imaPage}%}
+		set {_name} to "_SEIRYU" parsed as offline player
 		if {_title} is set:
-			set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128
+			# 멀티라인 셋팅
+			set slot {_loop}-1 of current inventory of {_p} to skull of {_name} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128
 			if {_multiLine::5} is set:
-				set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "&f%{_multiLine::5}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128		
+				set slot {_loop}-1 of current inventory of {_p} to skull of {_name} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "&f%{_multiLine::5}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128		
 			else if {_multiLine::4} is set:
-				set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
+				set slot {_loop}-1 of current inventory of {_p} to skull of {_name} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
 			else if {_multiLine::3} is set:
-				set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
+				set slot {_loop}-1 of current inventory of {_p} to skull of {_name} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
 			else if {_multiLine::2} is set:
-				set slot {_loop}-1 of current inventory of {_p} to PAPER named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
+				set slot {_loop}-1 of current inventory of {_p} to skull of {_name} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "" and "&f작성일 | %{_time}%" with custom model data 11128	
 		else:
 			exit loop
 
 on inventory click:
-	if inventory name of current inventory of player contain "&f섬원 모집":
+	if event-inventory's display name contains "&f섬원 모집":
 		cancel event
 		if clicked slot is 50:
 			add 1 to {page}
+			pageOpen(player, {page})
+		if clicked slot is 48:
+			remove 1 from {page}
 			pageOpen(player, {page})
