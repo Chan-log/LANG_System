@@ -20,3 +20,5 @@ Mongo | Mongo 데이터 베이스
 detector | 매크로 검사
 
 yaml | skript-yaml 
+
+게시판 | 
