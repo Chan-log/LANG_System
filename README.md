@@ -21,4 +21,4 @@ detector | 매크로 검사
 
 yaml | skript-yaml 
 
-게시판 | 
+게시판 | 섬원 모집
