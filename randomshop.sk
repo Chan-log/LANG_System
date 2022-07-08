@@ -2,7 +2,7 @@ options:
 	접두사: &e&L암상인 |&7
 	
 variables:
-	{price} = 0
+	{_price} = 0
 	{priceSet} = 0
 
 command /암상인 [<string>] [<integer>] [<integer>]:
@@ -81,11 +81,19 @@ command /암상인 [<string>] [<integer>] [<integer>]:
 			send "{@접두사} 모든 암상인를 초기화 하였습니다."
 			stop
 		if arg 1 is "가격":
-			send "%player%" to player
-			set {암상인.maxPrice::%{priceSet}%} to arg-2
-			set {암상인.minPrice::%{priceSet}%} to arg-3
-			send "%{priceSet}%가 &f%{암상인.maxPrice::%{priceSet}%}% ~ %{암상인.minPrice::%{priceSet}%}%로 설정 됨" to player
-			stop
+			if arg-2 is not set:
+				open chest with 6 row named "&f&l암상인 가격" to player
+				wait 1 tick
+				loop 54 times:
+					add 1 to {_player}
+					set slot {_player}-1 of current inventory of player to {암상인.itemlist::%{_player}%}
+				stop
+			else:
+				send "%player%" to player
+				set {암상인.maxPrice::%{priceSet}%} to arg-2
+				set {암상인.minPrice::%{priceSet}%} to arg-3
+				send "%{priceSet}%가 &f%{암상인.maxPrice::%{priceSet}%}% ~ %{암상인.minPrice::%{priceSet}%}%로 설정 됨" to player
+				stop
 		if arg 1 is "셋팅":
 			if size of {암상인.location::*} < 5:
 				send "{@접두사} &c저장된 암상인가 5개가 되지 않습니다."
@@ -109,16 +117,19 @@ on right click on entity:
 	if entity's name is "&7&l암상인":
 		cancel event
 		set {암상인.count} to 0
-		broadcast "{@접두사} &f&l%player%&7님께서 암상인과 접선하셨습니다."
+		# broadcast "{@접두사} &f&l%player%&7님께서 암상인과 접선하셨습니다."
+		broadcast "&e&l알림 | &f&l%player%&7님께서 암상인과 접선하셨습니다."
 		despawn citizen 0
 		send player title "&f" with subtitle "&f상점 창을 닫을 시 재이용이 불가능합니다." for 2 seconds
 		wait 40 ticks
 		set {_item} to random element of {암상인.itemlist::*}
 		set {_name} to display name of {_item}
-		send "%{_item}%&r | %{priceSet}%" to player
-		send "%{_name}% %{암상인.maxPrice::%{_name}%}% %{암상인.minPrice::%{_name}%}%" to player
-		set {price} to random integer between {암상인.maxPrice::%{_name}%} and {암상인.minPrice::%{_name}%}
-		set lore of {_item} to "&e&l가격 | &f%{price}%원"
+		set {_amount} to  item amount of {_item}
+		set {_maxPrice} to {암상인.maxPrice::%{_name}%} * {_amount}
+		set {_minPrice} to {암상인.minPrice::%{_name}%}	* {_amount}
+		# send "%{_amount}% %item amount of {_item}%" to player
+		set {_price} to random integer between {_minPrice} and {_maxPrice}
+		set lore of {_item} to "&e&l가격 | &f%{_price}%원"
 		open chest with 1 rows named "&f암상인" to player
 		set slot 4 of current inventory of player to {_item}
 		stop
@@ -143,11 +154,26 @@ every 5 minutes:
 on inventory click:
 	if event-inventory's display name contains "&f암상인":
 		cancel event
-	if event-inventory's display name contains "&f&l암상인 아이템":
+		if clicked item is set:
+			set {_item} to clicked item
+			set {_price} to 1st line of {_item}'s lore
+			replace all "&e&l가격 | &f" and " " and "원" with "" in {_price}
+			set {_price} to {_price} parsed as integer
+			# send "|%{_price}%|"
+			if player's balance >= {_price}:
+				send "&e&l알림 &f| &7%{_price}%원을 소모하여 구매를 완료하였습니다." to player
+				delete 1st line of {_item}'s lore
+				give player {_item}
+				remove {_price} from player's balance
+				close player's inventory
+			else:
+				send "&e&l알림 &f| &7보유중인 금액이 부족합니다." to player
+	if event-inventory's display name contains "&f&l암상인 가격":
 		cancel event
-		close player's inventory
-		set {priceSet} to display name of clicked item
-		send "%{priceSet}% | 이 선택됨 가격 입력 바람 /암상인 가격 최대 최소" to player
+		if clicked item is set:
+			close player's inventory
+			set {priceSet} to display name of clicked item
+			send "%{priceSet}% | 이 선택됨 가격 입력 바람 /암상인 가격 최대 최소" to player
 
 on inventory close:
 	if event-inventory's display name contains "&f&l암상인 아이템":
