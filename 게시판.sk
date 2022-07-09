@@ -2,7 +2,7 @@ variables:
 	{page.%player%}  = 0
 
 on script load:
-	set {mongoCluster} to mongo server with connection string "mongodb+srv://root:go_159159159@cluster0.j1qgc.mongodb.net/minecraft?retryWrites=true&w=majority"
+	set {mongoCluster} to mongo server with connection string "mongodb://root:mc_159159159@192.168.50.220:27017"
 	set {mongoDatabase} to mongo database "Notice" of {mongoCluster}
 	set {mongoCollection} to mongo collection "post" of {mongoDatabase}
 	# set {counterCollection} to mongo collection "counter" of {mongoDatabase}
