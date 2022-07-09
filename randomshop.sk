@@ -23,14 +23,14 @@ command /암상인 [<string>] [<integer>] [<integer>]:
 			if arg 2 is not set:
 				send "{@접두사} &c명령어가 올바르지 않습니다."
 				stop
-			loop {암상인.location::*}:
+			loop {randomShoplocation::*}:
 				add loop-value to {_Server.Pass::*}
 			if {_Server.Pass::%arg 2%} is set:
-				loop {암상인.location::*}:
-					if "%{암상인.location::%loop-index%}%" is "%{_Server.Pass::%arg 2%}%":
-						clear {암상인.who.%loop-value%}
-						clear {암상인.when.%loop-value%}
-						delete {암상인.location::%loop-index%}
+				loop {randomShoplocation::*}:
+					if "%{randomShoplocation::%loop-index%}%" is "%{_Server.Pass::%arg 2%}%":
+						clear {randomShopwho.%loop-value%}
+						clear {randomShopwhen.%loop-value%}
+						delete {randomShoplocation::%loop-index%}
 						send "{@접두사} 성공적으로 삭제하였습니다."
 						stop
 			send "{@접두사} &c번호에 해당되는 상자가 없습니다."
@@ -39,12 +39,12 @@ command /암상인 [<string>] [<integer>] [<integer>]:
 			loop blocks 1 above blocks infront of player:
 				add 1 to {_chest}
 				if loop-block is obsidian:
-					if "%{암상인.location::*}%" contains "%loop-block's location%":
+					if "%{randomShoplocation::*}%" contains "%loop-block's location%":
 						send "{@접두사} &c이미 이 위치는 저장되어 있습니다."
 						stop
-					add loop-block's location to {암상인.location::*}
-					set {암상인.who.%loop-block's location%} to "%player%"
-					set {암상인.when.%loop-block's location%} to "%now%"
+					add loop-block's location to {randomShoplocation::*}
+					set {randomShopwho.%loop-block's location%} to "%player%"
+					set {randomShopwhen.%loop-block's location%} to "%now%"
 					set loop-block to air
 					send "{@접두사} 암상인가 저장되었습니다."
 					stop
@@ -53,14 +53,14 @@ command /암상인 [<string>] [<integer>] [<integer>]:
 					stop
 			stop
 		if arg 1 is "목록":
-			if {암상인.location::*} is not set:
+			if {randomShoplocation::*} is not set:
 				send "{@접두사} &c저장된 암상인이 없습니다."
 				stop
 			send ""
-			loop {암상인.location::*}:
+			loop {randomShoplocation::*}:
 				add 1 to {_count}
 				send "{@접두사} &6%{_count}%. &b&l%loop-value%"
-				send "{@접두사} &f제작자: &6&l%{암상인.who.%loop-value%}%, &f날짜: &2&l%{암상인.when.%loop-value%}%"
+				send "{@접두사} &f제작자: &6&l%{randomShopwho.%loop-value%}%, &f날짜: &2&l%{randomShopwhen.%loop-value%}%"
 			send ""
 			stop
 		if arg 1 is "보상":
@@ -68,16 +68,16 @@ command /암상인 [<string>] [<integer>] [<integer>]:
 			wait 1 tick
 			loop 54 times:
 				add 1 to {_player}
-				set slot {_player}-1 of current inventory of player to {암상인.itemlist::%{_player}%}
+				set slot {_player}-1 of current inventory of player to {randomShopitemlist::%{_player}%}
 			stop
 		if arg 1 is "초기화":
-			if {암상인.top} is set:
+			if {randomShoptop} is set:
 				send "{@접두사} &c이미 암상인이 실행중입니다. 종료후 해주시기 바랍니다."
 				stop
-			loop {암상인.location::*}:
-				clear {암상인.who.%loop-value%}
-				clear {암상인.when.%loop-value%}
-			clear {암상인.location::*}
+			loop {randomShoplocation::*}:
+				clear {randomShopwho.%loop-value%}
+				clear {randomShopwhen.%loop-value%}
+			clear {randomShoplocation::*}
 			send "{@접두사} 모든 암상인를 초기화 하였습니다."
 			stop
 		if arg 1 is "가격":
@@ -86,47 +86,47 @@ command /암상인 [<string>] [<integer>] [<integer>]:
 				wait 1 tick
 				loop 54 times:
 					add 1 to {_player}
-					set slot {_player}-1 of current inventory of player to {암상인.itemlist::%{_player}%}
+					set slot {_player}-1 of current inventory of player to {randomShopitemlist::%{_player}%}
 				stop
 			else:
 				send "%player%" to player
-				set {암상인.maxPrice::%{priceSet}%} to arg-2
-				set {암상인.minPrice::%{priceSet}%} to arg-3
-				send "%{priceSet}%가 &f%{암상인.maxPrice::%{priceSet}%}% ~ %{암상인.minPrice::%{priceSet}%}%로 설정 됨" to player
+				set {randomShopmaxPrice::%{priceSet}%} to arg-2
+				set {randomShopminPrice::%{priceSet}%} to arg-3
+				send "%{priceSet}%가 &f%{randomShopmaxPrice::%{priceSet}%}% ~ %{randomShopminPrice::%{priceSet}%}%로 설정 됨" to player
 				stop
 		if arg 1 is "셋팅":
-			if size of {암상인.location::*} < 5:
+			if size of {randomShoplocation::*} < 5:
 				send "{@접두사} &c저장된 암상인가 5개가 되지 않습니다."
 				stop
-			if {암상인.top} is not set:
+			if {randomShoptop} is not set:
 				$ thread
 				암상인()
 				make console execute command "npc sel 0"
 				make console execute command "npc despawn"
-				make console execute command "npc moveto %x-coordinate of {암상인.top}% %y-coordinate of {암상인.top}% %z-coordinate of {암상인.top}% Spawn"
+				make console execute command "npc moveto %x-coordinate of {randomShoptop}% %y-coordinate of {randomShoptop}% %z-coordinate of {randomShoptop}% Spawn"
 				make console execute command "npc spawn"
 				broadcast "&e&l알림 &f| &7암상인이 등장하였습니다."
 				stop
-				set {암상인.count} to 11
+				set {randomShopcount} to 11
 				stop
-			clear {암상인.top}
+			clear {randomShoptop}
 			despawn citizen 0
 			send "{@접두사} 암상인 시스템을 비활성화 하였습니다."
 			stop
 on right click on entity:
 	if entity's name is "&7&l암상인":
 		cancel event
-		set {암상인.count} to 0
+		set {randomShopcount} to 0
 		# broadcast "{@접두사} &f&l%player%&7님께서 암상인과 접선하셨습니다."
 		broadcast "&e&l알림 | &f&l%player%&7님께서 암상인과 접선하셨습니다."
 		despawn citizen 0
 		send player title "&f" with subtitle "&f상점 창을 닫을 시 재이용이 불가능합니다." for 2 seconds
 		wait 40 ticks
-		set {_item} to random element of {암상인.itemlist::*}
+		set {_item} to random element of {randomShopitemlist::*}
 		set {_name} to display name of {_item}
 		set {_amount} to  item amount of {_item}
-		set {_maxPrice} to {암상인.maxPrice::%{_name}%} * {_amount}
-		set {_minPrice} to {암상인.minPrice::%{_name}%}	* {_amount}
+		set {_maxPrice} to {randomShopmaxPrice::%{_name}%} * {_amount}
+		set {_minPrice} to {randomShopminPrice::%{_name}%}	* {_amount}
 		# send "%{_amount}% %item amount of {_item}%" to player
 		set {_price} to random integer between {_minPrice} and {_maxPrice}
 		set lore of {_item} to "&e&l가격 | &f%{_price}%원"
@@ -135,17 +135,17 @@ on right click on entity:
 		stop
 		
 function 암상인():
-	set {_ran} to random integer between 1 and number of {암상인.location::*}
-	loop {암상인.location::*}:
+	set {_ran} to random integer between 1 and number of {randomShoplocation::*}
+	loop {randomShoplocation::*}:
 		if {_ran} is loop-index parsed as number:
-			set {암상인.top} to loop-value
+			set {randomShoptop} to loop-value
 every 5 minutes:
-	if {암상인.top} is set:
+	if {randomShoptop} is set:
 		$ thread
 		암상인()
 		make console execute command "npc sel 0"
 		make console execute command "npc despawn"
-		make console execute command "npc moveto %x-coordinate of {암상인.top}% %y-coordinate of {암상인.top}% %z-coordinate of {암상인.top}% Spawn"
+		make console execute command "npc moveto %x-coordinate of {randomShoptop}% %y-coordinate of {randomShoptop}% %z-coordinate of {randomShoptop}% Spawn"
 		make console execute command "npc spawn"
 		broadcast "&e&l알림 &f| &7암상인이 등장하였습니다."
 		stop
@@ -177,9 +177,9 @@ on inventory click:
 
 on inventory close:
 	if event-inventory's display name contains "&f&l암상인 아이템":
-		clear {암상인.itemlist::*}
+		clear {randomShopitemlist::*}
 		loop 54 times:
 			add 1 to {_slot}
 			if slot {_slot}-1 of current inventory of player is not air:
-				add slot {_slot}-1 of current inventory of player to {암상인.itemlist::*}
+				add slot {_slot}-1 of current inventory of player to {randomShopitemlist::*}
 		send "{@접두사} 보급보상이 설정되었습니다."
