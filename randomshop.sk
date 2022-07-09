@@ -6,8 +6,8 @@ variables:
 	{priceSet} = 0
 
 command /암상인 [<string>] [<integer>] [<integer>]:
-	permission: GM.use
-	permission Message: {@접두사} &c당신은 접근권한이 없습니다.
+	permission: admin.use
+	permission Message: &e&l알림 &f| &7명령어를 사용 할 수 있는 권한이 없습니다.
 	trigger:
 		if arg 1 is not set:
 			send ""
