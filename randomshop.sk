@@ -1,5 +1,5 @@
 options:
-	접두사: &e&L암상인 |&7
+	접두사: &e&L알림 |&7
 	
 variables:
 	{_price} = 0
