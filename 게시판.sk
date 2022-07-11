@@ -2,24 +2,22 @@ variables:
 	{page.%player%}  = 0
 
 on script load:
-	set {mongoCluster} to mongo server with connection string "mongodb://root:mc_159159159@192.168.50.220:27017"
-	set {mongoDatabase} to mongo database "Notice" of {mongoCluster}
-	set {mongoCollection} to mongo collection "post" of {mongoDatabase}
-	# set {counterCollection} to mongo collection "counter" of {mongoDatabase}
+	set {postCollection} to mongo collection "post" of {Database}
+	# set {counterCollection} to mongo collection "counter" of {postDatabase}
 
 command 게시판:
 	trigger:
-		#set {_documents::*} to all mongo documents of {mongoCollection}
+		#set {_documents::*} to all mongo documents of {postCollection}
 		# send "%{page.%player%} %" to player
 		set {page.%player%}  to 1
 		pageOpen(player, {page.%player%} )
 
 # 페이지 오픈
 function pageOpen(p : player, page : number):
-	set {_collections::*} to all mongo databases of {mongoCollection}
+	set {_collections::*} to all mongo databases of {postCollection}
 	# 게시글 갯수 확인
-	set {_count} to mongo estimated document count of {mongoCollection}
-	set {_docs::*} to all mongo documents of collection {mongoCollection}
+	set {_count} to mongo estimated document count of {postCollection}
+	set {_docs::*} to all mongo documents of collection {postCollection}
 	open chest with 6 rows named "&f섬원 모집" to {_p}
 	if {page.%{_p}%} > 1:
 		set slot 48 of current inventory of {_p} to PAPER named "&f이전 페이지" with lore "" with custom model data 11128
@@ -39,15 +37,15 @@ function pageOpen(p : player, page : number):
 		set {_head} to {_name} parsed as offline player
 		if {_title} is set:
 			# 멀티라인 셋팅
-			set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128
+			set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f%{_multiLine::1}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128
 			if {_multiLine::5} is set:
-				set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "&f%{_multiLine::5}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128		
+				set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f%{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "&f%{_multiLine::5}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128		
 			else if {_multiLine::4} is set:
-				set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128	
+				set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f%{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "&f%{_multiLine::4}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128	
 			else if {_multiLine::3} is set:
-				set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128	
+				set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f%{_multiLine::1}%" and "&f%{_multiLine::2}%" and "&f%{_multiLine::3}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128	
 			else if {_multiLine::2} is set:
-				set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f내용 | %{_multiLine::1}%" and "&f%{_multiLine::2}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128	
+				set slot {_loop}-1 of current inventory of {_p} to skull of {_head} named "&f제목 | %{_title}%" with lore "&f%{_multiLine::1}%" and "&f%{_multiLine::2}%" and "" and "&f%{_name}% | %{_time}%" with custom model data 11128	
 		else:
 			exit loop
 
