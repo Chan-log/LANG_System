@@ -1,0 +1,32 @@
+every 20 ticks:
+	add 1 to {quizCountdown}
+	if {quizCountdown} > 180:
+		broadcast "&e&l스피드 퀴즈 &f| 시간 초과! 정답은 %{quizAnswer}%이었습니다."
+		quiz()
+
+on script load:
+	set {quizCollection} to mongo collection "quiz" of {Database}
+	set {quiz::*} to all mongo documents of collection {quizCollection}
+	set {quizcount} to mongo estimated document count of {quizCollection}
+
+function quiz():
+	delete {quizCountdown}
+	set {_number} to random integer between 1 and {quizcount}
+	set {_quizIndex} to {quiz::%{_number}%}
+	set {_answer} to mongo value "answer" of {_quizIndex}
+	set {_question} to mongo value "question" of {_quizIndex}
+	broadcast "&e&l스피드 퀴즈 &f| &f%{_question}%"
+	set {quizAnswer} to {_answer}
+
+on chat:
+	if message contains {quizAnswer}:
+		broadcast "&e&l스피드 퀴즈 &f| %player%님께서 정답을 맞추셨습니다."
+		delete {quizAnswer}
+		add 1 to {quizRes::%uuid of player%}
+		wait 1200 ticks
+		quiz()
+
+command quizstart:
+	trigger:
+		if player is op:
+			quiz()
