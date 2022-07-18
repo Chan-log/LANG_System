@@ -22,6 +22,7 @@ on chat:
 	if message contains {quizAnswer}:
 		broadcast "&e&l스피드 퀴즈 &f| %player%님께서 정답을 맞추셨습니다."
 		delete {quizAnswer}
+		delete {quizCountdown}
 		add 1 to {quizRes::%uuid of player%}
 		wait 1200 ticks
 		quiz()
