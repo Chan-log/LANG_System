@@ -1,6 +1,4 @@
-on script load:
-    set {-sql} to the database "mysql://192.168.50.220:3306/mydatabase?user=root&password=mc_159159159&useSSL=false"
-    send "Loaded Dictionary" to console
+// 도감 설정 | 도감에 아이템 추가
 command /도감설정:
     trigger:
         if player is op:
@@ -8,6 +6,8 @@ command /도감설정:
             loop 54 times:
                 set slot (loop-number)-1 of current inventory of player to {dictionary_list::%loop-number%}
             stop
+            
+// 위에서 설정한 도가 창을 때 세이브
 on inventory close:
     if event-inventory's display name contains "&e&l도감 설정 |":
         delete {dictionary_list::*}
@@ -17,42 +17,55 @@ on inventory close:
         message "설정이 완료 되었습니다."
         stop
 
+// 도감 오픈
 command /도감 [<offlineplayer>]:
     trigger:
         if arg-1 is not set:
-            open chest with 6 row named "&e&l링 도감" to player
+            // 다른 사람의 닉네임 입력 없을시 자기 자시 오픈
+            open chest with 6 row named "&e&l랑 도감" to player
             loop 54 times:
                 if {dictionary::%uuid of player%::%loop-number%} is set:
                     set {_item} to {dictionary_list::%loop-number%}
-                    set line 1 of lore of {_item} to "&f도감 번호 | %loop-number%"
-                    set line 2 of lore of {_item} to "&f수집 레벨 | %{tier_dictionary::%uuid of player%::%loop-number%}%"
+                    set line 1 of lore of {_item} to "&e도감 번호 | &7%loop-number%"
+                    set line 2 of lore of {_item} to "&e수집 레벨 | &7%{tier_dictionary::%uuid of player%::%loop-number%}%"
                     set {_tier} to {tier_dictionary::%uuid of player%::%loop-number%} * 10
-                    set line 3 of lore of {_item} to "&f수집 현황 | %{dictionary::%uuid of player%::%loop-number%}%/%{_tier}%" 
+                    set line 3 of lore of {_item} to "&e수집 현황 | &7%{dictionary::%uuid of player%::%loop-number%}%/%{_tier}%" 
                     set slot (loop-number)-1 of current inventory of player to {_item}             					
                 else:
                     set slot (loop-number)-1 of current inventory of player to air
             stop
         else:
-            send "&e&l알림 &f|&7 준비중" to player
-
-command /도감관리 [<player>] [<number>] [<integer>]:
+            // 아니며 다른 사람 오픈
+            open chest with 6 row named "&e&l%arg-1%님의 도감" to player
+            loop 54 times:
+                if {dictionary::%uuid of arg-1%::%loop-number%} is set:
+                    set {_item} to {dictionary_list::%loop-number%}
+                    set line 1 of lore of {_item} to "&f도감 번호 | %loop-number%"
+                    set line 2 of lore of {_item} to "&f수집 레벨 | %{tier_dictionary::%uuid of arg-1%::%loop-number%}%"
+                    set {_tier} to {tier_dictionary::%uuid of arg-1%::%loop-number%} * 10
+                    set line 3 of lore of {_item} to "&f수집 현황 | %{dictionary::%uuid of arg-1%::%loop-number%}%/%{_tier}%" 
+                    set slot (loop-number)-1 of current inventory of player to {_item}             					
+                else:
+                    set slot (loop-number)-1 of current inventory of player to air
+// 도감에 추가
+command /도감관리 [<player>] [<integer>] [<integer>]:
     trigger:
-        if player is op:
+        if executor is op or console:
             add arg-3 to {dictionary::%uuid of arg-1%::%arg-2%}
             send "%arg-1%의 도감 번호 : %arg-2%이(가) 추가 되었습니다." to player
             if {dictionary::%uuid of arg-1%::%arg-2%} <= 0:
                 delete {dictionary::%uuid of arg-1%::%arg-2%}
             if {tier_dictionary::%uuid of arg-1%::%arg-2%} is not set:
                 set {tier_dictionary::%uuid of arg-1%::%arg-2%} to 1
-                
-
+// 조거 만족시 티어 상승
 on inventory click:
-    if inventory name of current inventory of player is "&e&l링 도감":
+    # if inventory name of current inventory of player contain "&e&l랑 도감":
+    if event-inventory's display name contains "&e&l랑 도감":
         cancel event
         set {_slot} to (clicked raw slot)+1
         set {_tier} to {tier_dictionary::%uuid of player%::%{_slot}%} * 10
         if {_tier} <= {dictionary::%uuid of player%::%{_slot}%}:
-            send "승급" to player
             add 1 to {tier_dictionary::%uuid of player%::%{_slot}%}
             set {dictionary::%uuid of player%::%{_slot}%} to 0
+            add 1 to {maxfatigue::%uuid of player%}
             close player's inventory
